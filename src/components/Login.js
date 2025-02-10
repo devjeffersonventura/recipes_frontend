@@ -1,15 +1,35 @@
 // src/components/Login.js
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, Alert } from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Importe useNavigate
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); 
+  const navigate = useNavigate(); // Hook para navegação
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Email:', email);
-    console.log('Senha:', password);
+    setLoading(true);
+    setError('');
+    try {
+      const response = await axios.post('http://localhost:8000/v1/login', {
+        email,
+        password,
+      });
+
+      alert('Login realizado com sucesso!'); 
+      localStorage.setItem('token', response.data.token); // Armazena o token no localStorage
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Erro ao fazer login:', err);
+      setError('Email ou senha incorretos. Tente novamente.'); 
+    } finally {
+      setLoading(false); 
+    }
   };
 
   return (
@@ -25,6 +45,7 @@ function Login() {
         <Typography component="h1" variant="h5">
           Login
         </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
             margin="normal"
@@ -55,8 +76,9 @@ function Login() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loading} 
           >
-            Entrar
+            {loading ? 'Carregando...' : 'Entrar'}
           </Button>
         </Box>
       </Box>
