@@ -2,33 +2,35 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, Alert } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Importe useNavigate
+import { useAuth } from '../context/AuthContext'; 
+import { useNavigate } from 'react-router-dom'; // Importe useNavigates
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false); 
+  const { login } = useAuth(); // Use o contexto para login
   const navigate = useNavigate(); // Hook para navegação
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError('');
+
     try {
       const response = await axios.post('http://localhost:8000/v1/login', {
         email,
         password,
       });
 
-      alert('Login realizado com sucesso!'); 
-      localStorage.setItem('token', response.data.token); // Armazena o token no localStorage
-      navigate('/dashboard');
+      login(response.data.user); // Atualiza o estado de autenticação
+      navigate('/dashboard'); // Redireciona para o Dashboard
     } catch (err) {
       console.error('Erro ao fazer login:', err);
-      setError('Email ou senha incorretos. Tente novamente.'); 
+      setError('Email ou senha incorretos. Tente novamente.');
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
