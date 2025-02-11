@@ -1,9 +1,9 @@
-// src/components/Dashboard.js
 import React from 'react';
-import { Button, Container, Typography, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Typography, Container, Box } from '@mui/material';
 
 function Dashboard() {
+  const user = JSON.parse(localStorage.getItem('user'));
+
   return (
     <Container maxWidth="sm">
       <Box
@@ -12,28 +12,11 @@ function Dashboard() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 2, // Espaçamento entre os botões
         }}
       >
         <Typography component="h1" variant="h5">
-          Dashboard
+          Olá, {user ? user.name : 'Usuário'}!
         </Typography>
-        <Button
-          variant="contained"
-          fullWidth
-          component={Link}
-          to="/cadastro-usuario"
-        >
-          Cadastro de Usuário
-        </Button>
-        <Button
-          variant="contained"
-          fullWidth
-          component={Link}
-          to="/cadastro-receitas"
-        >
-          Cadastro de Receitas
-        </Button>
       </Box>
     </Container>
   );
