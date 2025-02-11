@@ -1,12 +1,26 @@
 // src/components/Navbar.js
 import React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import { useState } from 'react';
+import { AppBar, Toolbar, Typography, Button, Menu, MenuItem, Box } from '@mui/material';
 import { Link } from 'react-router-dom'; // Se estiver usando React Router
+import { useAuth } from '../context/AuthContext'; // Importe o useAuth
 
 function Navbar() {
+  const [anchorEl, setAnchorEl] = useState(null); // Estado para controlar o submenu
+  const { user, logout } = useAuth(); // Use o contexto para acessar o usuário e o logout
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget); // Abre o submenu
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null); // Fecha o submenu
+  };
+
+  const handleLogout = () => {
+    logout(); // Chama o método de logout do contexto
+  };  
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -19,9 +33,24 @@ function Navbar() {
         <Button color="inherit" component={Link} to="/receitas">
           Receitas
         </Button>
-        <Button color="inherit" component={Link} to="/login">
-          Login
-        </Button>
+        {user ? (
+          <Box>
+            <Button color="inherit" onClick={handleMenuOpen}>
+              {user.name}
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </Box>
+        ) : (
+          <Button color="inherit" component={Link} to="/login">
+            Login
+          </Button>
+        )}        
       </Toolbar>
     </AppBar>
   );
